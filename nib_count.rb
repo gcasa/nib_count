@@ -2,8 +2,7 @@ require 'strscan'
 
 class NibCount
   def read_nib
-    @file = File.open(@name)
-    @data = @file.read
+    @data = File.readlines(@name)
   end
 
   def substring_positions(regexp,substring_len)
@@ -15,19 +14,18 @@ class NibCount
   end
 
   def enumerate_objects
-    # puts @data
-    array = substring_positions(/\n\t\t<[a-zA-Z]/, 5)
-    # puts array
-    o = 0
-    p = 0
-    array.each do |n|
-      i = n.to_i
-      @data.insert(i + 2 + p, o.to_s)
-      p = p + o.to_s.length
-      o = o + 1
+    result = ""
+    regexp = /^\t\t<[a-zA-Z]/
+    n = 0
+    @data.each do |line|
+      i = regexp.match( line )
+      if i.nil? == false
+        line.insert(1, n.to_s) unless i.nil?
+        n = n + 1
+      end
+      result = result + line
     end
-      # puts array
-    puts @data
+    result
   end
 
   def initialize
@@ -38,5 +36,5 @@ end
 
 nc = NibCount.new
 nc.read_nib
-nc.enumerate_objects
-
+result = nc.enumerate_objects
+puts result
